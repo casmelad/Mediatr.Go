@@ -3,7 +3,7 @@ package mediatr
 //Coleague
 type Coleague interface {
 	IsColleagueFor(RequestMessage) (bool, error)
-	HandleRequest(RequestMessage) error
+	Receive(RequestMessage) error
 }
 
 type callableColeague struct {
@@ -24,7 +24,7 @@ func (c callableColeague) call(r RequestMessage) error {
 	}
 
 	if is {
-		if error := c.coleague.HandleRequest(r); error != nil {
+		if error := c.coleague.Receive(r); error != nil {
 			return error
 		}
 	}

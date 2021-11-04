@@ -14,7 +14,7 @@ func (m *Mediatr) RegisterColeague(c Coleague) error {
 	return nil
 }
 
-func (m *Mediatr) Proccess(msg RequestMessage) error {
+func (m *Mediatr) Send(msg RequestMessage) error {
 
 	for _, col := range m.coleagues {
 		err := col.call(msg)

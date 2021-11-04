@@ -20,8 +20,8 @@ func main() {
 
 	//msg.UUID=uuid.New()
 
-	mediator.Proccess(msg)
-	mediator.Proccess(msg)
+	mediator.Send(msg)
+	mediator.Send(msg)
 
 }
 
@@ -43,7 +43,7 @@ func (h MessageHandler) IsColleagueFor(r mediatr.RequestMessage) (bool, error) {
 	return ok, nil
 }
 
-func (h MessageHandler) HandleRequest(r mediatr.RequestMessage) error {
+func (h MessageHandler) Receive(r mediatr.RequestMessage) error {
 
 	data := r.(MediatrRequestWrapper)
 

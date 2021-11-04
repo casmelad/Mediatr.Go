@@ -1,6 +1,6 @@
 # Mediatr.Go
 
-Is a library with a small mediator pattern implementation
+Is a library with a small mediator pattern implementation mainly inspired by Mediatr library for .Net
 
 ## Installation
 

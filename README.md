@@ -53,7 +53,7 @@ type MessageToHandle struct {
 }
 
 type MediatrRequestWrapper struct {
-	mediatr.BaseRequestMessage //Is necessary to compose our message with the mediatr message
+	mediatr.BaseRequestMessage //It is necessary to compose our message with the mediatr message
 	MessageToHandle //This is where the real data is going to live, just to keep it clean
 }
 ```

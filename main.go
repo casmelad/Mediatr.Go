@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	mediatr "github.com/casmelad/Mediatr.Go/pkg"
@@ -19,9 +20,10 @@ func main() {
 	}
 
 	//msg.UUID=uuid.New()
+	ctx := context.Background()
 
-	mediator.Send(msg)
-	mediator.Send(msg)
+	mediator.Send(ctx, msg)
+	mediator.Send(ctx, msg)
 
 }
 
@@ -43,7 +45,7 @@ func (h MessageHandler) IsColleagueFor(r mediatr.RequestMessage) (bool, error) {
 	return ok, nil
 }
 
-func (h MessageHandler) Receive(r mediatr.RequestMessage) error {
+func (h MessageHandler) Receive(ctx context.Context, r mediatr.RequestMessage) error {
 
 	data := r.(MediatrRequestWrapper)
 

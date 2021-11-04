@@ -1,9 +1,11 @@
 package mediatr
 
+import "context"
+
 //Coleague
 type Coleague interface {
 	IsColleagueFor(RequestMessage) (bool, error)
-	Receive(RequestMessage) error
+	Receive(context.Context, RequestMessage) error
 }
 
 type callableColeague struct {
@@ -17,14 +19,14 @@ func newCallableColeague(c Coleague) *callableColeague {
 }
 
 //call is a template method to handle the request
-func (c callableColeague) call(r RequestMessage) error {
+func (c callableColeague) call(ctx context.Context, r RequestMessage) error {
 	is, error := c.coleague.IsColleagueFor(r)
 	if error != nil {
 		return error
 	}
 
 	if is {
-		if error := c.coleague.Receive(r); error != nil {
+		if error := c.coleague.Receive(ctx, r); error != nil {
 			return error
 		}
 	}

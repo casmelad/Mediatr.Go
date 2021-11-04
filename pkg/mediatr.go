@@ -1,5 +1,7 @@
 package mediatr
 
+import "context"
+
 type Mediatr struct {
 	coleagues []*callableColeague
 }
@@ -14,10 +16,10 @@ func (m *Mediatr) RegisterColeague(c Coleague) error {
 	return nil
 }
 
-func (m *Mediatr) Send(msg RequestMessage) error {
+func (m *Mediatr) Send(ctx context.Context, msg RequestMessage) error {
 
 	for _, col := range m.coleagues {
-		err := col.call(msg)
+		err := col.call(ctx, msg)
 		if err != nil {
 			return err
 		}

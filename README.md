@@ -27,7 +27,7 @@ func (h MessageHandler) IsColleagueFor(r mediatr.RequestMessage) (bool, error) {
 }
 
 //Handles the message
-func (h MessageHandler) HandleRequest(r mediatr.RequestMessage) error {
+func (h MessageHandler) Receive(r mediatr.RequestMessage) error {
 
 	data := r.(MediatrRequestWrapper)
 
@@ -41,7 +41,7 @@ func (h MessageHandler) HandleRequest(r mediatr.RequestMessage) error {
 //The coleague interface
 type Coleague interface {
 	IsColleagueFor(RequestMessage) (bool, error)
-	HandleRequest(RequestMessage) error
+	Receive(RequestMessage) error
 }
 ```
 
@@ -73,8 +73,8 @@ func main() {
 
 	//msg.UUID=uuid.New() we can add the uuid manually as well
 
-	mediator.Proccess(msg) //We can proccess the same msg more than once with the same uuid
-	mediator.Proccess(msg)
+	mediator.Send(msg) //We can proccess the same msg more than once with the same uuid
+	mediator.Send(msg)
 
 }
 

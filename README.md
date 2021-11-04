@@ -37,7 +37,7 @@ func (h MessageHandler) HandleRequest(r mediatr.RequestMessage) error {
 }
 ```
 ### The coleague interface
-```
+```golang
 //The coleague interface
 type Coleague interface {
 	IsColleagueFor(RequestMessage) (bool, error)
@@ -46,7 +46,7 @@ type Coleague interface {
 ```
 
 ### The message to handle
-```
+```golang
 //Then we define the message to handle and the Mediatr wrapper
 type MessageToHandle struct {
 	EventInfo string
@@ -58,7 +58,7 @@ type MediatrRequestWrapper struct {
 }
 ```
 ### All the pieces working together
-```
+```golang
 func main() {
 
 	mediator := mediatr.NewMediator() //Creates the mediatr instance

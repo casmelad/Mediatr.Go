@@ -4,7 +4,7 @@ type Mediatr struct {
 	coleagues []*callableColeague
 }
 
-func (m *Mediatr) RegisterCallableColeague(c Coleague) error {
+func (m *Mediatr) RegisterColeague(c Coleague) error {
 	if m.coleagues == nil {
 		m.coleagues = []*callableColeague{}
 	}

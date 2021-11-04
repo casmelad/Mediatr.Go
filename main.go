@@ -10,7 +10,7 @@ func main() {
 
 	mediator := mediatr.NewMediator()
 
-	mediator.RegisterCallableColeague(MessageHandler{})
+	mediator.RegisterColeague(MessageHandler{})
 
 	msgWithUUID := mediatr.NewRequestWithUUID()
 

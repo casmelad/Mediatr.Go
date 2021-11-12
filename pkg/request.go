@@ -26,3 +26,6 @@ func (r BaseRequestMessage) GetUUID() uuid.UUID {
 type RequestMessage interface {
 	GetUUID() uuid.UUID
 }
+
+type TaskParameter interface{}
+type TaskResult interface{}

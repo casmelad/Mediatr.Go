@@ -1,4 +1,6 @@
-package main
+package mediatr
+
+/* package main
 
 import (
 	"context"
@@ -10,14 +12,19 @@ import (
 func main() {
 
 	mediator := mediatr.NewMediator()
-
-	mediator.RegisterColeague(MessageHandler{})
+	mediator.RegisterColeagueForMessage(EventHandler{}, EventData{})
 	mediator.RegisterTask(TaskToExecuteWithResult{})
 
 	msgWithUUID := mediatr.NewRequestWithUUID()
 
-	msg := MediatrRequestWrapper{
+	msg2 := EventData{
 		BaseRequestMessage: *msgWithUUID,
+		Greeting:           "Event 1",
+	}
+
+	msg3 := EventData{
+		BaseRequestMessage: *msgWithUUID,
+		Greeting:           "Event 2",
 	}
 
 	taskParameter := TaskParameter{
@@ -28,8 +35,8 @@ func main() {
 
 	//msg.UUID=uuid.New()
 	ctx := context.Background()
-
-	mediator.Send(ctx, msg)
+	mediator.SendMsg(ctx, msg2)
+	mediator.SendMsg(ctx, msg3)
 
 	result, err := mediator.ExecuteTask(ctx, taskParameter)
 
@@ -42,30 +49,16 @@ func main() {
 
 }
 
-type MessageToHandle struct {
-	EventInfo string
-}
-
-type MediatrRequestWrapper struct {
+type EventData struct {
 	mediatr.BaseRequestMessage
-	MessageToHandle
+	Greeting string
 }
 
-type MessageHandler struct{}
+type EventHandler struct{}
 
-func (h MessageHandler) IsColleagueFor(r mediatr.RequestMessage) (bool, error) {
-
-	_, ok := r.(MediatrRequestWrapper)
-
-	return ok, nil
-}
-
-func (h MessageHandler) Receive(ctx context.Context, r mediatr.RequestMessage) error {
-
-	data := r.(MediatrRequestWrapper)
-
-	fmt.Println(fmt.Printf("message uuid %s and event data %s", data.GetUUID(), data.EventInfo))
-
+func (h EventHandler) Receive(ctx context.Context, r mediatr.RequestMessage) error {
+	data := r.(EventData)
+	fmt.Println(fmt.Sprintf("message uuid and event data %s", data.Greeting))
 	return nil
 }
 
@@ -98,3 +91,4 @@ func (o TaskToExecuteWithResult) Execute(ctx context.Context, params mediatr.Tas
 		Result: "Task result info: " + parameters.Data,
 	}, nil
 }
+*/

@@ -2,11 +2,16 @@ package mediatr
 
 import (
 	"context"
+	"errors"
 	"fmt"
 )
 
+var (
+	ErrHandlerNotFound error = errors.New("handler not found")
+)
+
 type Mediatr struct {
-	types            []coleagueEntry
+	types            map[string]coleagueEntry
 	safeTypes        []safeTypeColeagueEntry
 	tasksProccessors []*taskProccessor
 }
@@ -26,9 +31,8 @@ func (m *Mediatr) RegisterColeagueForMessage(c Coleague, msg RequestMessage) err
 
 	colEntry := coleagueEntry{
 		coleague: c,
-		msg:      msg,
 	}
-	m.types = append(m.types, colEntry)
+	m.types[fmt.Sprintf("%T", msg)] = colEntry
 	return nil
 }
 
@@ -53,31 +57,32 @@ func (m *Mediatr) RegisterTask(t Task) error {
 
 //SendMsg - sends the message to the correct coleague if exists in the registered coleagues collection
 func (m *Mediatr) SendMsg(ctx context.Context, msg RequestMessage) error {
-	for _, col := range m.types {
-		if fmt.Sprintf("%T", msg) == fmt.Sprintf("%T", col.msg) {
-			err := col.coleague.Receive(ctx, msg)
-			if err != nil {
-				return err
-			}
-		}
+
+	col, is := m.types[fmt.Sprintf("%T", msg)]
+
+	if !is {
+		return ErrHandlerNotFound
+	}
+
+	err := col.coleague.Receive(ctx, msg)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
 //SendMsg - sends the message to the correct coleague if exists in the registered coleagues collection
-func (m *Mediatr) SendMsgWithSafeType(ctx context.Context, params RequestMessage) (TaskResult, error) {
-
-	for _, task := range m.tasksProccessors {
-		result, err := task.execute(ctx, params)
-		if err != nil {
-			return nil, err
+func (m *Mediatr) SendMsgWithSafeType(ctx context.Context, params RequestMessage) error {
+	for _, col := range m.safeTypes {
+		if is, _ := col.coleague.IsColleagueFor(params); is {
+			col.coleague.Receive(ctx, params)
 		}
 
-		return result, nil
+		return nil
 	}
 
-	return nil, nil
+	return nil
 }
 
 //ExeuteTask - Look up the handler to execute the task and returns the expected result
@@ -96,5 +101,7 @@ func (m *Mediatr) ExecuteTask(ctx context.Context, params TaskParameter) (TaskRe
 }
 
 func NewMediator() *Mediatr {
-	return &Mediatr{}
+	return &Mediatr{
+		types: map[string]coleagueEntry{},
+	}
 }

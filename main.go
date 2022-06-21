@@ -84,6 +84,7 @@ func (o TaskToExecuteWithResult) CanExecute(params mediatr.TaskParameter) (bool,
 
 	return ok, nil
 }
+
 func (o TaskToExecuteWithResult) Execute(ctx context.Context, params mediatr.TaskParameter) (mediatr.TaskResult, error) {
 	parameters := params.(TaskParameter)
 

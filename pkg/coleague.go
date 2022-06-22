@@ -3,11 +3,9 @@ package mediatr
 import "context"
 
 //Coleague
-type Coleague interface {
-	Receive(context.Context, RequestMessage) error
+type Colleague[T any] interface {
+	CallableColleague
+	Receive(context.Context, T) error
 }
 
-type SafeTypeColeague interface {
-	IsColleagueFor(RequestMessage) (bool, error)
-	Receive(context.Context, RequestMessage) error
-}
+type CallableColleague interface{}

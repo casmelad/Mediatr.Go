@@ -11,60 +11,40 @@ var (
 )
 
 type Mediatr struct {
-	types            map[string]coleagueEntry
-	safeTypes        []safeTypeColeagueEntry
-	tasksProccessors []*taskProccessor
-}
-
-type coleagueEntry struct {
-	coleague Coleague
-	msg      RequestMessage
-}
-
-type safeTypeColeagueEntry struct {
-	coleague SafeTypeColeague
-	msg      RequestMessage
+	types            map[string]CallableColleague
+	tasksProccessors []*CallableTask
 }
 
 //RegisterColeagueForMessage - register a coleague to handle the message specified
-func (m *Mediatr) RegisterColeagueForMessage(c Coleague, msg RequestMessage) error {
-
-	colEntry := coleagueEntry{
-		coleague: c,
-	}
-	m.types[fmt.Sprintf("%T", msg)] = colEntry
-	return nil
-}
-
-//RegisterColeagueForMessage - register a coleague to handle the message specified
-func (m *Mediatr) RegisterSafeTypeColeagueForMessage(c SafeTypeColeague, msg RequestMessage) error {
-
-	colEntry := safeTypeColeagueEntry{
-		coleague: c,
-		msg:      msg,
-	}
-	m.safeTypes = append(m.safeTypes, colEntry)
+func RegisterColeagueForMessage[T any](m *Mediatr, c CallableColleague, msg T) error {
+	m.types[fmt.Sprintf("%T", msg)] = c
 	return nil
 }
 
 //RegisterTask - register a handler to execute a task and return a result
-func (m *Mediatr) RegisterTask(t Task) error {
+func RegisterTask(m *Mediatr, t CallableTask) error {
 
-	m.tasksProccessors = append(m.tasksProccessors, newTaskProccessor(t))
+	var task CallableTask = t
+
+	m.tasksProccessors = append(m.tasksProccessors, &task)
 
 	return nil
 }
 
 //SendMsg - sends the message to the correct coleague if exists in the registered coleagues collection
-func (m *Mediatr) SendMsg(ctx context.Context, msg RequestMessage) error {
+func SendMsg[T any](ctx context.Context, m *Mediatr, msg T) error {
 
 	col, is := m.types[fmt.Sprintf("%T", msg)]
-
 	if !is {
 		return ErrHandlerNotFound
 	}
 
-	err := col.coleague.Receive(ctx, msg)
+	colleague, is := col.(Colleague[T])
+	if !is {
+		return ErrHandlerNotFound
+	}
+
+	err := colleague.Receive(ctx, msg)
 	if err != nil {
 		return err
 	}
@@ -72,36 +52,27 @@ func (m *Mediatr) SendMsg(ctx context.Context, msg RequestMessage) error {
 	return nil
 }
 
-//SendMsg - sends the message to the correct coleague if exists in the registered coleagues collection
-func (m *Mediatr) SendMsgWithSafeType(ctx context.Context, params RequestMessage) error {
-	for _, col := range m.safeTypes {
-		if is, _ := col.coleague.IsColleagueFor(params); is {
-			col.coleague.Receive(ctx, params)
-		}
-
-		return nil
-	}
-
-	return nil
-}
-
 //ExeuteTask - Look up the handler to execute the task and returns the expected result
-func (m *Mediatr) ExecuteTask(ctx context.Context, params TaskParameter) (TaskResult, error) {
+func ExecuteTask[T any, U any](ctx context.Context, m *Mediatr, params T) (U, error) {
+	var result U
 
 	for _, task := range m.tasksProccessors {
-		result, err := task.execute(ctx, params)
-		if err != nil {
-			return nil, err
-		}
+		tp := *task
+		if t, is := tp.(Task[T, U]); is {
 
+			result, err := t.Execute(ctx, params)
+
+			if err == nil {
+				return result, err
+			}
+		}
 		return result, nil
 	}
-
-	return nil, nil
+	return result, ErrHandlerNotFound
 }
 
 func NewMediator() *Mediatr {
 	return &Mediatr{
-		types: map[string]coleagueEntry{},
+		types: map[string]CallableColleague{},
 	}
 }

@@ -1,6 +1,4 @@
-package mediatr
-
-/* package main
+package main
 
 import (
 	"context"
@@ -11,85 +9,56 @@ import (
 
 func main() {
 
-	mediator := mediatr.NewMediator()
-	mediator.RegisterColeagueForMessage(EventHandler{}, EventData{})
-	mediator.RegisterTask(TaskToExecuteWithResult{})
-
-	msgWithUUID := mediatr.NewRequestWithUUID()
+	m := mediatr.NewMediator()
+	mediatr.RegisterColeagueForMessage(m, EventHandler{}, EventData{})
+	mediatr.RegisterTask(m, TaskToExecuteWithResult{})
 
 	msg2 := EventData{
-		BaseRequestMessage: *msgWithUUID,
-		Greeting:           "Event 1",
+		Greeting: "Event 1",
 	}
 
-	msg3 := EventData{
-		BaseRequestMessage: *msgWithUUID,
-		Greeting:           "Event 2",
+	taskParameter := TaskParameters{
+		Data: "001 Code",
 	}
 
-	taskParameter := TaskParameter{
-		DataToProccess: DataToProccess{
-			Data: "001 Code",
-		},
-	}
-
-	//msg.UUID=uuid.New()
 	ctx := context.Background()
-	mediator.SendMsg(ctx, msg2)
-	mediator.SendMsg(ctx, msg3)
 
-	result, err := mediator.ExecuteTask(ctx, taskParameter)
+	mediatr.SendMsg(ctx, m, msg2)
+	result, err := mediatr.ExecuteTask[TaskParameters, TaskResult](ctx, m, taskParameter)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(err)
 	} else {
-		data := result.(TaskResultData)
+		data := result
 		fmt.Println(data.Result)
 	}
 
 }
 
 type EventData struct {
-	mediatr.BaseRequestMessage
 	Greeting string
 }
 
 type EventHandler struct{}
 
-func (h EventHandler) Receive(ctx context.Context, r mediatr.RequestMessage) error {
-	data := r.(EventData)
+func (h EventHandler) Receive(ctx context.Context, data EventData) error {
 	fmt.Println(fmt.Sprintf("message uuid and event data %s", data.Greeting))
 	return nil
 }
 
-type DataToProccess struct {
+type TaskParameters struct {
 	Data string
 }
 
-type TaskParameter struct {
-	mediatr.TaskParameter
-	DataToProccess
-}
-
-type TaskResultData struct {
-	mediatr.TaskResult
+type TaskResult struct {
 	Result string
 }
 
 type TaskToExecuteWithResult struct {
 }
 
-func (o TaskToExecuteWithResult) CanExecute(params mediatr.TaskParameter) (bool, error) {
-	_, ok := params.(TaskParameter)
-
-	return ok, nil
-}
-
-func (o TaskToExecuteWithResult) Execute(ctx context.Context, params mediatr.TaskParameter) (mediatr.TaskResult, error) {
-	parameters := params.(TaskParameter)
-
-	return TaskResultData{
-		Result: "Task result info: " + parameters.Data,
+func (o TaskToExecuteWithResult) Execute(ctx context.Context, params TaskParameters) (TaskResult, error) {
+	return TaskResult{
+		Result: "Task result info: " + params.Data,
 	}, nil
 }
-*/

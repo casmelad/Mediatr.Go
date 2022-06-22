@@ -1,4 +1,6 @@
-package main
+package mediatr
+
+/* package main
 
 import (
 	"context"
@@ -62,3 +64,4 @@ func (o TaskToExecuteWithResult) Execute(ctx context.Context, params TaskParamet
 		Result: "Task result info: " + params.Data,
 	}, nil
 }
+*/

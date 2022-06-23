@@ -7,25 +7,28 @@ import (
 )
 
 var (
-	ErrHandlerNotFound error = errors.New("handler not found")
+	ErrHandlerNotFound          error = errors.New("handler not found")
+	ErrHandlerAlreadyRegistered error = errors.New("handler already exists")
 )
 
-type Mediatr struct {
-	types            map[string]CallableColleague
-	tasksProccessors []*CallableTask
+type ok struct {
 }
 
-//RegisterColeagueForMessage - register a coleague to handle the message specified
-func RegisterColeagueForMessage[T any](m *Mediatr, c CallableColleague, msg T) error {
-	m.types[fmt.Sprintf("%T", msg)] = c
+type Mediatr struct {
+	types            map[string]callableColleague
+	tasksProccessors []*callableTask
+}
+
+//RegisterHandler - register a coleague to handle the message specified
+func RegisterHandler[T any](m *Mediatr, c Colleague[T]) error {
+	var _type T
+	m.types[fmt.Sprintf("%T", _type)] = c
 	return nil
 }
 
 //RegisterTask - register a handler to execute a task and return a result
-func RegisterTask(m *Mediatr, t CallableTask) error {
-
-	var task CallableTask = t
-
+func RegisterTask[T any, U any](m *Mediatr, t Task[T, U]) error {
+	var task callableTask = t
 	m.tasksProccessors = append(m.tasksProccessors, &task)
 
 	return nil
@@ -59,9 +62,7 @@ func ExecuteTask[T any, U any](ctx context.Context, m *Mediatr, params T) (U, er
 	for _, task := range m.tasksProccessors {
 		tp := *task
 		if t, is := tp.(Task[T, U]); is {
-
 			result, err := t.Execute(ctx, params)
-
 			if err == nil {
 				return result, err
 			}
@@ -73,6 +74,6 @@ func ExecuteTask[T any, U any](ctx context.Context, m *Mediatr, params T) (U, er
 
 func NewMediator() *Mediatr {
 	return &Mediatr{
-		types: map[string]CallableColleague{},
+		types: map[string]callableColleague{},
 	}
 }

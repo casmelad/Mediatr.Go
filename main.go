@@ -1,7 +1,5 @@
 package mediatr
 
-/* package main
-
 import (
 	"context"
 	"fmt"
@@ -12,10 +10,10 @@ import (
 func main() {
 
 	m := mediatr.NewMediator()
-	mediatr.RegisterColeagueForMessage(m, EventHandler{}, EventData{})
-	mediatr.RegisterTask(m, TaskToExecuteWithResult{})
+	mediatr.RegisterHandler[HandlerData](m, EventHandler{})
+	mediatr.RegisterTask[TaskParameters, TaskResult](m, TaskToExecuteWithResult{})
 
-	msg2 := EventData{
+	msg2 := HandlerData{
 		Greeting: "Event 1",
 	}
 
@@ -37,13 +35,13 @@ func main() {
 
 }
 
-type EventData struct {
+type HandlerData struct {
 	Greeting string
 }
 
 type EventHandler struct{}
 
-func (h EventHandler) Receive(ctx context.Context, data EventData) error {
+func (h EventHandler) Receive(ctx context.Context, data HandlerData) error {
 	fmt.Println(fmt.Sprintf("message uuid and event data %s", data.Greeting))
 	return nil
 }
@@ -64,4 +62,3 @@ func (o TaskToExecuteWithResult) Execute(ctx context.Context, params TaskParamet
 		Result: "Task result info: " + params.Data,
 	}, nil
 }
-*/

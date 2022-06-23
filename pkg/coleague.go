@@ -4,8 +4,8 @@ import "context"
 
 //Coleague
 type Colleague[T any] interface {
-	CallableColleague
+	callableColleague
 	Receive(context.Context, T) error
 }
 
-type CallableColleague interface{}
+type callableColleague interface{}

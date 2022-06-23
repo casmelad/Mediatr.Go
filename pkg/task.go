@@ -3,8 +3,8 @@ package mediatr
 import "context"
 
 type Task[T any, U any] interface {
-	CallableTask
+	callableTask
 	Execute(context.Context, T) (U, error)
 }
 
-type CallableTask interface{}
+type callableTask interface{}
